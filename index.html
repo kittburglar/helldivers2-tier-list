@@ -165,7 +165,7 @@
 
 <header>
   <h1>Helldivers 2 — tier lists</h1>
-  <p>Warbonds · primary &amp; secondary weapons · grenades · armor passives</p>
+  <p>Warbonds · weapons · grenades · armor · support · backpacks · eagles · sentries · boosters · orbitals</p>
   <p id="last-updated"></p>
   <p class="nav"><a href="v2.html">Try the new faction filter (v2) →</a></p>
 </header>
@@ -254,6 +254,69 @@ const DATA = [
       "B":  ["Rock Solid", "Reinforced Epaulettes", "Gunslinger", "Extra Padding", "Supplementary Adrenaline", "Feet First", "Servo-Assisted"],
       "C":  ["Integrated Explosives", "Advanced Filtration"],
       "D":  ["Electrical Conduit"]
+    }
+  },
+  {
+    name: "Support weapons",
+    icon: "🧰",
+    tiers: {
+      "S+": ["Autocannon", "Laser Cannon", "Quasar Cannon", "Recoilless Rifle"],
+      "S":  ["Machine Gun", "Expendable Anti-Tank", "Grenade Launcher", "Arc Thrower"],
+      "A":  ["Heavy Machine Gun", "Stalwart", "Flamethrower", "Commando", "Airburst Rocket Launcher", "Railgun", "Anti-Materiel Rifle", "Spear", "Sterilizer", "Cremator"],
+      "B":  ["Epoch", "Maxigun", "Leveller", "Belt-Fed Grenade Launcher"],
+      "C":  ["Defoliation Tool", "Breaching Hammer"]
+    }
+  },
+  {
+    name: "Backpacks",
+    icon: "🎒",
+    tiers: {
+      "S+": ["Supply Pack", "Shield Generator Pack"],
+      "S":  ["Guard Dog Rover", "Jump Pack"],
+      "A":  ["Guard Dog", "Ballistic Shield", "Hover Pack", "Portable Hellbomb"],
+      "B":  ["Guard Dog Dog Breath", "Guard Dog Hot Dog", "Directional Shield", "Warp Pack"]
+    }
+  },
+  {
+    name: "Eagle stratagems",
+    icon: "🦅",
+    tiers: {
+      "S+": ["Eagle Airstrike", "Eagle 500kg Bomb"],
+      "S":  ["Eagle Cluster Bomb", "Eagle Napalm Airstrike"],
+      "A":  ["Eagle 110mm Rocket Pods", "Eagle Strafing Run"],
+      "B":  ["Eagle Smoke Strike"]
+    }
+  },
+  {
+    name: "Sentries & emplacements",
+    icon: "🗼",
+    tiers: {
+      "S":  ["Gatling Sentry", "Machine Gun Sentry", "Autocannon Sentry"],
+      "A":  ["Rocket Sentry", "Mortar Sentry", "EMS Mortar Sentry", "HMG Emplacement", "Tesla Tower"],
+      "B":  ["Flame Sentry", "Gas Mortar Sentry", "Laser Sentry", "Anti-Tank Emplacement", "Shield Generator Relay"],
+      "C":  ["Anti-Personnel Minefield", "Incendiary Mines"]
+    }
+  },
+  {
+    name: "Boosters",
+    icon: "⚡",
+    tiers: {
+      "S+": ["Hellpod Space Optimization", "Vitality Enhancement", "Stamina Enhancement"],
+      "S":  ["Experimental Infusion", "Muscle Enhancement"],
+      "A":  ["UAV Recon Booster", "Localization Confusion", "Increased Reinforcement Budget", "Flexible Reinforcement Budget"],
+      "B":  ["Firebomb Hellpods", "Dead Sprint", "Motivational Shocks"],
+      "C":  ["Expert Extraction Pilot", "Concealed Insertion"]
+    }
+  },
+  {
+    name: "Orbital stratagems",
+    icon: "🛰️",
+    tiers: {
+      "S+": ["Orbital Precision Strike", "Orbital Railcannon Strike"],
+      "S":  ["Orbital Laser", "Orbital Gas Strike", "Orbital 380mm HE Barrage", "Orbital Napalm Barrage"],
+      "A":  ["Orbital Walking Barrage", "Orbital 120mm HE Barrage", "Orbital Gatling Barrage", "Orbital Airburst Strike"],
+      "B":  ["Orbital EMS Strike"],
+      "C":  ["Orbital Smoke Strike"]
     }
   }
 ];
@@ -369,7 +432,103 @@ const SOURCE = {
   "Servo-Assisted": "Steeled Veterans",
   "Integrated Explosives": "Servants of Freedom",
   "Advanced Filtration": "Chemical Agents",
-  "Electrical Conduit": "Cutting Edge"
+  "Electrical Conduit": "Cutting Edge",
+
+  // Support weapons
+  "Autocannon": "Base game",
+  "Laser Cannon": "Base game",
+  "Quasar Cannon": "Base game",
+  "Recoilless Rifle": "Base game",
+  "Machine Gun": "Base game",
+  "Expendable Anti-Tank": "Base game",
+  "Grenade Launcher": "Base game",
+  "Arc Thrower": "Base game",
+  "Heavy Machine Gun": "Base game",
+  "Stalwart": "Base game",
+  "Flamethrower": "Base game",
+  "Commando": "Base game",
+  "Airburst Rocket Launcher": "Base game",
+  "Railgun": "Base game",
+  "Anti-Materiel Rifle": "Base game",
+  "Spear": "Base game",
+  "Sterilizer": "Chemical Agents",
+  "Cremator": "Entrenched Division",
+  "Epoch": "Control Group",
+  "Maxigun": "Python Commandos",
+  "Leveller": "Siege Breakers",
+  "Belt-Fed Grenade Launcher": "Siege Breakers",
+  "Defoliation Tool": "Python Commandos",
+  "Breaching Hammer": "Siege Breakers",
+
+  // Backpacks
+  "Supply Pack": "Base game",
+  "Shield Generator Pack": "Base game",
+  "Guard Dog Rover": "Base game",
+  "Jump Pack": "Base game",
+  "Guard Dog": "Base game",
+  "Ballistic Shield": "Base game",
+  "Hover Pack": "Borderline Justice",
+  "Portable Hellbomb": "Servants of Freedom",
+  "Guard Dog Dog Breath": "Chemical Agents",
+  "Guard Dog Hot Dog": "Python Commandos",
+  "Directional Shield": "Urban Legends",
+  "Warp Pack": "Control Group",
+
+  // Eagle stratagems
+  "Eagle Airstrike": "Base game",
+  "Eagle 500kg Bomb": "Base game",
+  "Eagle Cluster Bomb": "Base game",
+  "Eagle Napalm Airstrike": "Base game",
+  "Eagle 110mm Rocket Pods": "Base game",
+  "Eagle Strafing Run": "Base game",
+  "Eagle Smoke Strike": "Base game",
+
+  // Sentries & emplacements
+  "Gatling Sentry": "Base game",
+  "Machine Gun Sentry": "Base game",
+  "Autocannon Sentry": "Base game",
+  "Rocket Sentry": "Base game",
+  "Mortar Sentry": "Base game",
+  "EMS Mortar Sentry": "Base game",
+  "HMG Emplacement": "Base game",
+  "Tesla Tower": "Base game",
+  "Flame Sentry": "Urban Legends",
+  "Gas Mortar Sentry": "Entrenched Division",
+  "Laser Sentry": "Control Group",
+  "Anti-Tank Emplacement": "Urban Legends",
+  "Shield Generator Relay": "Base game",
+  "Anti-Personnel Minefield": "Base game",
+  "Incendiary Mines": "Base game",
+
+  // Boosters
+  "Hellpod Space Optimization": "Base game",
+  "Vitality Enhancement": "Base game",
+  "Stamina Enhancement": "Base game",
+  "Muscle Enhancement": "Base game",
+  "UAV Recon Booster": "Base game",
+  "Localization Confusion": "Base game",
+  "Increased Reinforcement Budget": "Base game",
+  "Flexible Reinforcement Budget": "Base game",
+  "Expert Extraction Pilot": "Base game",
+  "Motivational Shocks": "Base game",
+  "Experimental Infusion": "Viper Commandos",
+  "Firebomb Hellpods": "Freedom's Flame",
+  "Dead Sprint": "Truth Enforcers",
+  "Concealed Insertion": "Redacted Regiment",
+
+  // Orbital stratagems
+  "Orbital Precision Strike": "Base game",
+  "Orbital Railcannon Strike": "Base game",
+  "Orbital Laser": "Base game",
+  "Orbital Gas Strike": "Base game",
+  "Orbital 380mm HE Barrage": "Base game",
+  "Orbital Napalm Barrage": "Base game",
+  "Orbital Walking Barrage": "Base game",
+  "Orbital 120mm HE Barrage": "Base game",
+  "Orbital Gatling Barrage": "Base game",
+  "Orbital Airburst Strike": "Base game",
+  "Orbital EMS Strike": "Base game",
+  "Orbital Smoke Strike": "Base game"
 };
 
 /* ============================================================
@@ -466,7 +625,83 @@ const FACTION = {
   "Inflammable": ["b"],
   "Integrated Explosives": ["i"],
   "Advanced Filtration": ["b"],
-  "Electrical Conduit": ["i"]
+  "Electrical Conduit": ["i"],
+
+  // Support weapons
+  "Autocannon": ["a","b"],
+  "Laser Cannon": ["a","i"],
+  "Quasar Cannon": ["b","a","i"],
+  "Recoilless Rifle": ["b","a","i"],
+  "Machine Gun": ["b"],
+  "Expendable Anti-Tank": ["b","a","i"],
+  "Grenade Launcher": ["b"],
+  "Arc Thrower": ["b","i"],
+  "Heavy Machine Gun": ["a"],
+  "Stalwart": ["b"],
+  "Flamethrower": ["b"],
+  "Commando": ["a","b"],
+  "Airburst Rocket Launcher": ["b","i"],
+  "Railgun": ["a"],
+  "Anti-Materiel Rifle": ["a"],
+  "Spear": ["a","b"],
+  "Sterilizer": ["b"],
+  "Cremator": ["b"],
+  "Epoch": ["a","i"],
+  "Maxigun": ["b"],
+  "Leveller": ["b","a"],
+  "Belt-Fed Grenade Launcher": ["b","a"],
+  "Breaching Hammer": ["b"],
+
+  // Backpacks
+  "Shield Generator Pack": ["a"],
+  "Ballistic Shield": ["a"],
+  "Guard Dog Rover": ["b"],
+  "Guard Dog": ["b"],
+  "Guard Dog Dog Breath": ["b"],
+  "Guard Dog Hot Dog": ["b"],
+  "Portable Hellbomb": ["a","b"],
+  "Directional Shield": ["a"],
+
+  // Eagle stratagems
+  "Eagle Airstrike": ["b","a","i"],
+  "Eagle 500kg Bomb": ["b","a","i"],
+  "Eagle Cluster Bomb": ["b","i"],
+  "Eagle Napalm Airstrike": ["b"],
+  "Eagle 110mm Rocket Pods": ["a"],
+  "Eagle Strafing Run": ["b","i"],
+
+  // Sentries & emplacements
+  "Gatling Sentry": ["b"],
+  "Machine Gun Sentry": ["b"],
+  "Autocannon Sentry": ["a"],
+  "Rocket Sentry": ["a"],
+  "Mortar Sentry": ["b"],
+  "EMS Mortar Sentry": ["b","i"],
+  "HMG Emplacement": ["a"],
+  "Tesla Tower": ["b"],
+  "Flame Sentry": ["b"],
+  "Gas Mortar Sentry": ["b"],
+  "Laser Sentry": ["a","i"],
+  "Anti-Tank Emplacement": ["a"],
+  "Shield Generator Relay": ["a"],
+  "Anti-Personnel Minefield": ["b"],
+  "Incendiary Mines": ["b"],
+
+  // Boosters
+  "Firebomb Hellpods": ["b"],
+
+  // Orbital stratagems
+  "Orbital Precision Strike": ["b","a","i"],
+  "Orbital Railcannon Strike": ["b","a","i"],
+  "Orbital Laser": ["b","a","i"],
+  "Orbital Gas Strike": ["b"],
+  "Orbital 380mm HE Barrage": ["a","b"],
+  "Orbital Napalm Barrage": ["b"],
+  "Orbital Walking Barrage": ["a","b"],
+  "Orbital 120mm HE Barrage": ["a","b"],
+  "Orbital Gatling Barrage": ["b"],
+  "Orbital Airburst Strike": ["b","i"],
+  "Orbital EMS Strike": ["b","i"]
 };
 
 /* ============================================================

@@ -166,6 +166,47 @@
   @media (max-width:600px){
     .lo-label{ flex-basis:64px; }
   }
+  .chip.unowned{ opacity:.3; }
+  .ownbox{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:0 1.5rem;
+    margin-bottom:1.25rem;
+  }
+  .ownbox summary{
+    cursor:pointer;
+    padding:1rem 0;
+    font-weight:700;
+    font-size:14px;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .ownbox summary::-webkit-details-marker{ display:none; }
+  .ownbox summary::before{ content:"▸"; color:var(--text-muted); font-size:12px; }
+  .ownbox[open] summary::before{ content:"▾"; }
+  .ownbox[open] summary{ border-bottom:1px solid var(--border); }
+  #ownCount{ color:var(--text-muted); font-weight:400; font-size:12px; }
+  .own-actions{ display:flex; gap:8px; margin:1rem 0 0.75rem; }
+  .own-mini{
+    font-family:inherit; font-size:12px; color:var(--text-secondary);
+    background:transparent; border:1px solid var(--border);
+    border-radius:999px; padding:5px 12px; cursor:pointer;
+  }
+  .own-mini:hover{ color:var(--text); border-color:#3a4152; }
+  .own-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:7px 14px;
+  }
+  .own-grid label{
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; color:var(--text-secondary); cursor:pointer;
+  }
+  .own-grid input{ accent-color:var(--b); width:15px; height:15px; }
+  .own-note{ font-size:11px; color:var(--text-muted); margin:0.9rem 0 1.1rem; }
   .wrap{
     max-width:920px;
     margin:0 auto;
@@ -295,6 +336,15 @@
     <span>🤖 Automatons</span>
     <span>🦑 Illuminate</span>
   </div>
+  <details class="ownbox" id="ownbox">
+    <summary>Owned warbonds <span id="ownCount"></span></summary>
+    <div class="own-actions">
+      <button type="button" class="own-mini" id="ownAll">Select all</button>
+      <button type="button" class="own-mini" id="ownNone">Select none</button>
+    </div>
+    <div class="own-grid" id="ownGrid"></div>
+    <p class="own-note">Base-game, Super Store &amp; free gear is always included. Unchecking a warbond removes its gear from the generator and dims it in the lists. Saved in your browser.</p>
+  </details>
   <div class="generator">
     <div class="gen-top">
       <button class="gen-btn" id="genBtn">🎲 Generate loadout</button>
@@ -899,7 +949,7 @@ function chipHTML(item, baseTier, curTier){
     mv = '<span class="mv ' + (down ? 'down' : 'up') + '" title="Overall: ' + baseTier + '">' +
          (down ? '▼' : '▲') + baseTier + '</span>';
   }
-  return '<span class="chip">' +
+  return '<span class="chip' + (chipOwned(item) ? '' : ' unowned') + '">' +
     '<span class="chip-name">' + item + facIcons + mv + '</span>' +
     (src ? '<span class="src">' + src + '</span>' : '') +
     '</span>';
@@ -991,7 +1041,8 @@ const POOL = {
 function tierScore(t){ return TIER_ORDER.length - TIER_ORDER.indexOf(t); } // S+ =6 ... D =1
 
 function weightedPick(pool, faction, used){
-  const candidates = pool.filter(function(o){ return !used[o.item]; });
+  let candidates = pool.filter(function(o){ return !used[o.item] && isOwned(o.item); });
+  if(!candidates.length) candidates = pool.filter(function(o){ return !used[o.item]; });
   const weights = candidates.map(function(o){
     return Math.pow(tierScore(tierFor(o.item, o.base, faction)), 2);
   });
@@ -1062,6 +1113,77 @@ function loadoutText(){
 document.getElementById("genBtn").addEventListener("click", function(){
   renderLoadout(activeFaction);
 });
+
+/* ============================================================
+   OWNED WARBONDS
+   Players who don't own every warbond can uncheck the ones they
+   lack. The generator then only rolls gear they can equip, and
+   unowned gear is dimmed in the tier lists. Base-game, Super
+   Store and free items are always treated as owned. The choice
+   is remembered in the browser (localStorage).
+   ============================================================ */
+
+const ALL_WARBONDS = (function(){
+  const cat = DATA.find(function(c){ return c.name === "Warbonds"; });
+  const list = [];
+  if(cat) TIER_ORDER.forEach(function(t){ (cat.tiers[t] || []).forEach(function(w){ list.push(w); }); });
+  return list;
+})();
+
+const NON_WARBOND_SOURCE = { "Base game": 1, "Super Store": 1, "Free (anniversary)": 1 };
+
+function loadOwned(){
+  try{
+    const raw = localStorage.getItem("hd2_owned_warbonds");
+    if(raw) return new Set(JSON.parse(raw));
+  }catch(e){}
+  return new Set(ALL_WARBONDS); // default: own everything
+}
+let owned = loadOwned();
+function saveOwned(){
+  try{ localStorage.setItem("hd2_owned_warbonds", JSON.stringify(Array.from(owned))); }catch(e){}
+}
+
+// Is a given item available to the player?
+function isOwned(item){
+  const src = SOURCE[item];
+  if(!src) return true;                  // no source label (e.g. the warbonds list itself)
+  if(NON_WARBOND_SOURCE[src]) return true;
+  return owned.has(src);
+}
+// Dimming rule for a chip: warbond chips key off their own name.
+function chipOwned(item){
+  if(ALL_WARBONDS.indexOf(item) !== -1) return owned.has(item);
+  return isOwned(item);
+}
+
+// Build the owned-warbonds selector.
+const ownGrid = document.getElementById("ownGrid");
+const ownCount = document.getElementById("ownCount");
+ownGrid.innerHTML = ALL_WARBONDS.map(function(w){
+  return '<label><input type="checkbox" data-wb="' + w + '"> ' + w + '</label>';
+}).join("");
+function syncOwnUI(){
+  Array.prototype.forEach.call(ownGrid.querySelectorAll("input"), function(cb){
+    cb.checked = owned.has(cb.getAttribute("data-wb"));
+  });
+  ownCount.textContent = "(" + owned.size + " / " + ALL_WARBONDS.length + ")";
+}
+ownGrid.addEventListener("change", function(e){
+  const cb = e.target;
+  if(cb && cb.matches("input[type=checkbox]")){
+    const wb = cb.getAttribute("data-wb");
+    if(cb.checked) owned.add(wb); else owned.delete(wb);
+    saveOwned(); syncOwnUI(); render(activeFaction);
+  }
+});
+document.getElementById("ownAll").addEventListener("click", function(){
+  owned = new Set(ALL_WARBONDS); saveOwned(); syncOwnUI(); render(activeFaction);
+});
+document.getElementById("ownNone").addEventListener("click", function(){
+  owned = new Set(); saveOwned(); syncOwnUI(); render(activeFaction);
+});
+syncOwnUI();
 
 document.getElementById("copyBtn").addEventListener("click", function(){
   const btn = this;

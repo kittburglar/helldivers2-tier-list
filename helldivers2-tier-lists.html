@@ -114,12 +114,22 @@
   }
   .chip{
     font-size:12.5px;
-    padding:4px 10px;
-    border-radius:999px;
+    padding:5px 11px;
+    border-radius:12px;
     background:rgba(255,255,255,0.05);
     border:1px solid var(--border);
     color:var(--text);
     white-space:nowrap;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1.25;
+  }
+  .chip .src{
+    font-size:10px;
+    color:var(--text-muted);
+    font-weight:400;
+    margin-top:1px;
   }
   footer{
     text-align:center;
@@ -224,6 +234,120 @@ const DATA = [
 ];
 
 /* ============================================================
+   WARBOND / SOURCE for each item. Add an entry here (key must
+   match the item name above exactly) to show where it's unlocked.
+   Use "Base game", "Super Store", or a warbond name.
+   ============================================================ */
+
+const SOURCE = {
+  // Primary weapons
+  "Eruptor": "Democratic Detonation",
+  "Purifier": "Polar Patriots",
+  "Explosive Crossbow": "Democratic Detonation",
+  "Punisher Plasma": "Cutting Edge",
+  "Scorcher": "Base game",
+  "Censor": "Redacted Regiment",
+  "Diligence": "Base game",
+  "Coyote": "Dust Devils",
+  "Sweeper": "Super Store",
+  "Variable": "Control Group",
+  "Double Freedom": "Super Store",
+  "Dominator": "Steeled Veterans",
+  "Double-Edge Sickle": "Servants of Freedom",
+  "Scythe": "Base game",
+  "Trident": "Siege Breakers",
+  "Sickle": "Cutting Edge",
+  "Tenderizer": "Polar Patriots",
+  "Liberator Carbine": "Viper Commandos",
+  "Reprimand": "Truth Enforcers",
+  "Stoker": "Entrenched Division",
+  "Gallant": "Exo Experts",
+  "Breaker": "Base game",
+  "Breaker Incendiary": "Steeled Veterans",
+  "Torcher": "Freedom's Flame",
+  "Constitution": "Free (anniversary)",
+  "Liberator Concussive": "Steeled Veterans",
+  "Blitzer": "Cutting Edge",
+
+  // Secondary weapons
+  "Grenade Pistol": "Democratic Detonation",
+  "Senator": "Steeled Veterans",
+  "Ultimatum": "Servants of Freedom",
+  "Talon": "Borderline Justice",
+  "Loyalist": "Truth Enforcers",
+  "Re-Educator": "Redacted Regiment",
+  "Warrant": "Super Store",
+  "Verdict": "Polar Patriots",
+  "Veto": "Entrenched Division",
+  "Missile Pistol": "Exo Experts",
+  "Redeemer": "Base game",
+  "Stim Pistol": "Chemical Agents",
+  "Crisper": "Freedom's Flame",
+  "SOCOM": "Halo: ODST",
+  "Machete": "Super Store",
+  "Saber": "Masters of Ceremony",
+  "Combat Hatchet": "Super Store",
+  "Dagger": "Cutting Edge",
+  "Bushwhacker": "Viper Commandos",
+  "Peacemaker": "Base game",
+  "Stun Lance": "Urban Legends",
+  "Stun Baton": "Super Store",
+  "Entrenchment Tool": "Entrenched Division",
+
+  // Grenades
+  "Thermite": "Democratic Detonation",
+  "Gas": "Chemical Agents",
+  "Dynamite": "Borderline Justice",
+  "Shield": "Siege Breakers",
+  "Stun": "Cutting Edge",
+  "Incendiary Impact": "Polar Patriots",
+  "Incendiary": "Steeled Veterans",
+  "Impact": "Base game",
+  "Lure Mine": "Redacted Regiment",
+  "Pyrotech": "Masters of Ceremony",
+  "High Explosive": "Base game",
+  "Pineapple": "Dust Devils",
+  "Giga Grenade": "Entrenched Division",
+  "Seeker": "Servants of Freedom",
+  "Frag": "Base game",
+  "Smokescreen": "Super Store",
+  "Smoke": "Base game",
+  "Arc": "Control Group",
+  "Urchin": "Force of Law",
+  "Throwing Knife": "Viper Commandos",
+
+  // Armor passives
+  "Med-Kit": "Base game",
+  "Siege-Ready": "Siege Breakers",
+  "Engineering Kit": "Base game",
+  "Oxygenator": "Exo Experts",
+  "Reduced Signature": "Redacted Regiment",
+  "Ballistic Padding": "Urban Legends",
+  "Concussive Padding (Reinforced)": "Super Store",
+  "Desert Stormer": "Dust Devils",
+  "Acclimated": "Righteous Revenants",
+  "Unflinching": "Truth Enforcers",
+  "Peak Physique": "Viper Commandos",
+  "Democracy Protects": "Base game",
+  "Concussive Padding (Hazmat)": "Entrenched Division",
+  "Concussive Padding (Grenadier)": "Entrenched Division",
+  "Fortified": "Base game",
+  "Scout": "Base game",
+  "Adreno-Defibrillator": "Control Group",
+  "Inflammable": "Freedom's Flame",
+  "Rock Solid": "Python Commandos",
+  "Reinforced Epaulettes": "Masters of Ceremony",
+  "Gunslinger": "Borderline Justice",
+  "Extra Padding": "Base game",
+  "Supplementary Adrenaline": "Siege Breakers",
+  "Feet First": "Halo: ODST",
+  "Servo-Assisted": "Steeled Veterans",
+  "Integrated Explosives": "Servants of Freedom",
+  "Advanced Filtration": "Chemical Agents",
+  "Electrical Conduit": "Cutting Edge"
+};
+
+/* ============================================================
    RENDER LOGIC - no need to touch anything below this line
    ============================================================ */
 
@@ -250,7 +374,10 @@ catsEl.innerHTML = DATA.map(function(cat){
     .filter(function(t){ return cat.tiers[t] && cat.tiers[t].length; })
     .map(function(t){
       const chips = cat.tiers[t].map(function(item){
-        return '<span class="chip">' + item + '</span>';
+        const src = SOURCE[item];
+        return '<span class="chip">' + item +
+          (src ? '<span class="src">' + src + '</span>' : '') +
+          '</span>';
       }).join("");
       return '<div class="tier-row">' +
         '<div class="tier-badge" style="background:' + TIER_COLOR[t] + '">' + t + '</div>' +

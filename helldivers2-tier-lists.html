@@ -64,6 +64,8 @@
     color:var(--text-secondary);
   }
   .legend span{display:flex;align-items:center;gap:6px}
+  #legend{margin-bottom:0.9rem}
+  .faction-key{color:var(--text-muted)}
   .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
   section.category{
     background:var(--card);
@@ -131,6 +133,12 @@
     font-weight:400;
     margin-top:1px;
   }
+  .chip .fac{
+    margin-left:6px;
+    font-size:11px;
+    letter-spacing:1px;
+    vertical-align:middle;
+  }
   footer{
     text-align:center;
     color:var(--text-muted);
@@ -153,6 +161,12 @@
 
 <div class="wrap">
   <div class="legend" id="legend"></div>
+  <div class="legend faction-key">
+    <span>Excels vs:</span>
+    <span>🐛 Terminids</span>
+    <span>🤖 Automatons</span>
+    <span>🦑 Illuminate</span>
+  </div>
   <div id="categories"></div>
   <footer>
     Community consensus tier lists. Meta shifts with balance patches — treat as a snapshot, not gospel.
@@ -348,6 +362,96 @@ const SOURCE = {
 };
 
 /* ============================================================
+   FACTION it excels against. Codes: "b" = Terminids (bugs),
+   "a" = Automatons (bots), "i" = Illuminate (squids).
+   Give each item an array of the factions it's strongest vs.
+   Leave an item out (or use []) for pure-utility / all-round gear.
+   This is a meta guideline, not a hard rule.
+   ============================================================ */
+
+const FACTION_EMOJI = { b: "🐛", a: "🤖", i: "🦑" };
+
+const FACTION = {
+  // Primary weapons
+  "Eruptor": ["b","a","i"],
+  "Purifier": ["b","a","i"],
+  "Explosive Crossbow": ["b","a","i"],
+  "Punisher Plasma": ["a","i"],
+  "Scorcher": ["a","i"],
+  "Censor": ["a","i"],
+  "Diligence": ["a"],
+  "Coyote": ["b"],
+  "Sweeper": ["i"],
+  "Double Freedom": ["b","i"],
+  "Dominator": ["a","b"],
+  "Double-Edge Sickle": ["b","a"],
+  "Scythe": ["b","i"],
+  "Sickle": ["b","a"],
+  "Tenderizer": ["b","a"],
+  "Liberator Carbine": ["b"],
+  "Reprimand": ["a","b"],
+  "Stoker": ["b"],
+  "Breaker": ["b"],
+  "Breaker Incendiary": ["b"],
+  "Torcher": ["b"],
+  "Liberator Concussive": ["b"],
+  "Blitzer": ["b","i"],
+
+  // Secondary weapons
+  "Grenade Pistol": ["b","a","i"],
+  "Senator": ["a"],
+  "Ultimatum": ["b","a","i"],
+  "Talon": ["a"],
+  "Loyalist": ["a"],
+  "Warrant": ["a"],
+  "Verdict": ["a"],
+  "Missile Pistol": ["a"],
+  "Redeemer": ["b","i"],
+  "Crisper": ["b","i"],
+  "Machete": ["b","i"],
+  "Saber": ["b","i"],
+  "Combat Hatchet": ["b","i"],
+  "Dagger": ["b"],
+  "Bushwhacker": ["b","i"],
+  "Stun Lance": ["b","i"],
+  "Stun Baton": ["b","i"],
+
+  // Grenades
+  "Thermite": ["b","a","i"],
+  "Gas": ["b"],
+  "Dynamite": ["b","a"],
+  "Stun": ["a","i"],
+  "Incendiary Impact": ["b"],
+  "Incendiary": ["b"],
+  "Impact": ["b","a"],
+  "Lure Mine": ["b"],
+  "Pyrotech": ["b"],
+  "High Explosive": ["b","a"],
+  "Pineapple": ["b"],
+  "Giga Grenade": ["b","a"],
+  "Seeker": ["b"],
+  "Frag": ["b","a"],
+  "Arc": ["b","i"],
+  "Urchin": ["a","i"],
+  "Throwing Knife": ["b"],
+
+  // Armor passives (based on the damage type they resist)
+  "Ballistic Padding": ["a"],
+  "Concussive Padding (Reinforced)": ["a"],
+  "Desert Stormer": ["b"],
+  "Acclimated": ["b"],
+  "Unflinching": ["a"],
+  "Peak Physique": ["b"],
+  "Concussive Padding (Hazmat)": ["a","b"],
+  "Concussive Padding (Grenadier)": ["a"],
+  "Fortified": ["a"],
+  "Inflammable": ["b"],
+  "Integrated Explosives": ["i"],
+  "Advanced Filtration": ["b"],
+  "Electrical Conduit": ["i"]
+};
+
+/* ============================================================
    RENDER LOGIC - no need to touch anything below this line
    ============================================================ */
 
@@ -375,7 +479,12 @@ catsEl.innerHTML = DATA.map(function(cat){
     .map(function(t){
       const chips = cat.tiers[t].map(function(item){
         const src = SOURCE[item];
-        return '<span class="chip">' + item +
+        const fac = FACTION[item];
+        const facIcons = (fac && fac.length)
+          ? '<span class="fac">' + fac.map(function(f){ return FACTION_EMOJI[f]; }).join("") + '</span>'
+          : '';
+        return '<span class="chip">' +
+          '<span class="chip-name">' + item + facIcons + '</span>' +
           (src ? '<span class="src">' + src + '</span>' : '') +
           '</span>';
       }).join("");

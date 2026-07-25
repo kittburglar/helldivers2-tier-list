@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Helldivers 2 Tier Lists</title>
+<title>Helldivers 2 Tier Lists (v3 — loadout generator)</title>
 <style>
   :root{
     --bg:#0f1115;
@@ -59,6 +59,107 @@
     border-bottom:1px dotted var(--text-muted);
   }
   .nav a:hover{ color:var(--text); }
+  .controls{
+    position:sticky;
+    top:0;
+    z-index:5;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+    background:var(--bg);
+    padding:14px 0 12px;
+    margin-bottom:0.4rem;
+  }
+  .fbtn{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-secondary);
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:8px 16px;
+    cursor:pointer;
+    transition:color .15s, background .15s, border-color .15s;
+  }
+  .fbtn:hover{ color:var(--text); border-color:#3a4152; }
+  .fbtn.active{
+    color:var(--text);
+    background:rgba(63,143,214,0.14);
+    border-color:var(--b);
+  }
+  .hint{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-muted);
+    margin:0 0 1.75rem;
+  }
+  .generator{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:1.25rem 1.5rem 1.4rem;
+    margin-bottom:1.75rem;
+  }
+  .gen-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:1rem;
+  }
+  .gen-btn{
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    color:#0f1115;
+    background:var(--s);
+    border:none;
+    border-radius:999px;
+    padding:10px 20px;
+    cursor:pointer;
+    transition:filter .15s;
+  }
+  .gen-btn:hover{ filter:brightness(1.08); }
+  .gen-note{ font-size:12px; color:var(--text-muted); }
+  .lo-head{
+    font-size:12px;
+    font-weight:700;
+    color:var(--text-secondary);
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  .lo-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:7px 0;
+    border-top:1px solid var(--border);
+  }
+  .lo-row.first{ border-top:none; }
+  .lo-label{
+    flex:0 0 92px;
+    font-size:11px;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .lo-tier{
+    flex:0 0 34px;
+    text-align:center;
+    font-size:11px;
+    font-weight:700;
+    border-radius:6px;
+    padding:3px 0;
+    color:#0f1115;
+  }
+  .lo-item{ font-size:14px; font-weight:600; }
+  .lo-src{ font-size:11px; color:var(--text-muted); font-weight:400; }
+  @media (max-width:600px){
+    .lo-label{ flex-basis:64px; }
+  }
   .wrap{
     max-width:920px;
     margin:0 auto;
@@ -149,6 +250,14 @@
     letter-spacing:1px;
     vertical-align:middle;
   }
+  .chip .mv{
+    margin-left:6px;
+    font-size:10px;
+    font-weight:700;
+    vertical-align:middle;
+  }
+  .chip .mv.down{ color:#e2726b; }
+  .chip .mv.up{ color:#5cc98a; }
   footer{
     text-align:center;
     color:var(--text-muted);
@@ -167,10 +276,12 @@
   <h1>Helldivers 2 — tier lists</h1>
   <p>Warbonds · weapons · grenades · armor · support · backpacks · eagles · sentries · boosters · orbitals</p>
   <p id="last-updated"></p>
-  <p class="nav"><a href="v2.html">faction filter (v2)</a> · <a href="v3.html">loadout generator (v3)</a></p>
+  <p class="nav"><a href="index.html">classic (v1)</a> · <a href="v2.html">faction filter (v2)</a></p>
 </header>
 
 <div class="wrap">
+  <div class="controls" id="controls"></div>
+  <p class="hint">Pick an enemy to re-rank every list for that faction. <span style="color:#e2726b">▼</span> marks gear that drops from its overall tier.</p>
   <div class="legend" id="legend"></div>
   <div class="legend faction-key">
     <span>Excels vs:</span>
@@ -178,10 +289,17 @@
     <span>🤖 Automatons</span>
     <span>🦑 Illuminate</span>
   </div>
+  <div class="generator">
+    <div class="gen-top">
+      <button class="gen-btn" id="genBtn">🎲 Generate loadout</button>
+      <span class="gen-note">Weighted toward the faction picked above (Overall = any). Reroll anytime.</span>
+    </div>
+    <div id="loadout"></div>
+  </div>
   <div id="categories"></div>
   <footer>
     Community consensus tier lists. Meta shifts with balance patches — treat as a snapshot, not gospel.
-    <br>To update: edit the <code>DATA</code> object at the top of the &lt;script&gt; tag in this file, then reload.
+    <br>Faction lists are derived from the <code>Overall</code> ranking + each item's faction affinity. Fine-tune any pick via the <code>OVERRIDES</code> map in this file.
   </footer>
 </div>
 
@@ -705,6 +823,28 @@ const FACTION = {
 };
 
 /* ============================================================
+   PER-FACTION TIER RANKING
+   The "Overall" list above is the baseline. For a specific
+   faction, each item's tier is derived automatically:
+     - excels vs that faction  -> keeps its overall tier
+     - off-meta vs that faction -> drops 1 tier (dual-faction
+       gear) or 2 tiers (single-faction specialist)
+     - pure-utility gear (no FACTION entry) -> unchanged
+   To hard-set a tier for a faction, add an override below,
+   e.g.  "Torcher": { a: "D", i: "C" }
+   (keys: b = Terminids, a = Automatons, i = Illuminate)
+   ============================================================ */
+
+const OVERRIDES = {};
+
+const FILTERS = [
+  { key: "all", label: "Overall" },
+  { key: "b",   label: "🐛 Terminids" },
+  { key: "a",   label: "🤖 Automatons" },
+  { key: "i",   label: "🦑 Illuminate" }
+];
+
+/* ============================================================
    RENDER LOGIC - no need to touch anything below this line
    ============================================================ */
 
@@ -726,31 +866,180 @@ legendEl.innerHTML = TIER_ORDER.map(function(t){
 }).join("");
 
 const catsEl = document.getElementById("categories");
-catsEl.innerHTML = DATA.map(function(cat){
-  const rows = TIER_ORDER
-    .filter(function(t){ return cat.tiers[t] && cat.tiers[t].length; })
-    .map(function(t){
-      const chips = cat.tiers[t].map(function(item){
-        const src = SOURCE[item];
-        const fac = FACTION[item];
-        const facIcons = (fac && fac.length)
-          ? '<span class="fac">' + fac.map(function(f){ return FACTION_EMOJI[f]; }).join("") + '</span>'
-          : '';
-        return '<span class="chip">' +
-          '<span class="chip-name">' + item + facIcons + '</span>' +
-          (src ? '<span class="src">' + src + '</span>' : '') +
-          '</span>';
+let activeFaction = "all";
+
+// Derive an item's tier for the selected faction.
+function tierFor(item, baseTier, faction){
+  if(faction === "all") return baseTier;
+  if(OVERRIDES[item] && OVERRIDES[item][faction]) return OVERRIDES[item][faction];
+  const aff = FACTION[item];
+  if(!aff || !aff.length) return baseTier;          // utility: same for everyone
+  if(aff.indexOf(faction) !== -1) return baseTier;  // excels here: keep tier
+  const drop = aff.length >= 2 ? 1 : 2;             // off-meta here: drop
+  const idx = Math.min(TIER_ORDER.indexOf(baseTier) + drop, TIER_ORDER.length - 1);
+  return TIER_ORDER[idx];
+}
+
+function chipHTML(item, baseTier, curTier){
+  const src = SOURCE[item];
+  const fac = FACTION[item];
+  const facIcons = (fac && fac.length)
+    ? '<span class="fac">' + fac.map(function(f){ return FACTION_EMOJI[f]; }).join("") + '</span>'
+    : '';
+  let mv = '';
+  if(curTier !== baseTier){
+    const down = TIER_ORDER.indexOf(curTier) > TIER_ORDER.indexOf(baseTier);
+    mv = '<span class="mv ' + (down ? 'down' : 'up') + '" title="Overall: ' + baseTier + '">' +
+         (down ? '▼' : '▲') + baseTier + '</span>';
+  }
+  return '<span class="chip">' +
+    '<span class="chip-name">' + item + facIcons + mv + '</span>' +
+    (src ? '<span class="src">' + src + '</span>' : '') +
+    '</span>';
+}
+
+function render(faction){
+  activeFaction = faction;
+  catsEl.innerHTML = DATA.map(function(cat){
+    // Regroup this category's items into tiers for the active faction.
+    const tiers = {};
+    TIER_ORDER.forEach(function(t){ tiers[t] = []; });
+    TIER_ORDER.forEach(function(baseTier){
+      (cat.tiers[baseTier] || []).forEach(function(item){
+        const cur = tierFor(item, baseTier, faction);
+        tiers[cur].push({ item: item, base: baseTier });
+      });
+    });
+    const rows = TIER_ORDER
+      .filter(function(t){ return tiers[t].length; })
+      .map(function(t){
+        const chips = tiers[t].map(function(o){ return chipHTML(o.item, o.base, t); }).join("");
+        return '<div class="tier-row">' +
+          '<div class="tier-badge" style="background:' + TIER_COLOR[t] + '">' + t + '</div>' +
+          '<div class="chips">' + chips + '</div>' +
+          '</div>';
       }).join("");
-      return '<div class="tier-row">' +
-        '<div class="tier-badge" style="background:' + TIER_COLOR[t] + '">' + t + '</div>' +
-        '<div class="chips">' + chips + '</div>' +
-        '</div>';
-    }).join("");
-  return '<section class="category">' +
-    '<div class="cat-head"><span class="icon">' + cat.icon + '</span><h2>' + cat.name + '</h2></div>' +
-    rows +
-    '</section>';
+    return '<section class="category">' +
+      '<div class="cat-head"><span class="icon">' + cat.icon + '</span><h2>' + cat.name + '</h2></div>' +
+      rows +
+      '</section>';
+  }).join("");
+
+  Array.prototype.forEach.call(document.querySelectorAll(".fbtn"), function(btn){
+    btn.classList.toggle("active", btn.getAttribute("data-faction") === faction);
+  });
+
+  renderLoadout(faction);
+}
+
+// Build the faction toggle.
+const controlsEl = document.getElementById("controls");
+controlsEl.innerHTML = FILTERS.map(function(f){
+  return '<button class="fbtn" data-faction="' + f.key + '">' + f.label + '</button>';
 }).join("");
+controlsEl.addEventListener("click", function(e){
+  const btn = e.target.closest(".fbtn");
+  if(btn){ render(btn.getAttribute("data-faction")); }
+});
+
+/* ============================================================
+   RANDOM LOADOUT GENERATOR
+   Picks 1 primary, 1 secondary, 1 grenade, 1 armor passive,
+   1 booster, and 4 stratagems (a support weapon, a backpack,
+   and two offensive stratagems). Picks are weighted toward the
+   selected faction's tier ranking, so faction-appropriate,
+   higher-tier gear shows up more often.
+   ============================================================ */
+
+const FACTION_LABEL = {
+  all: "any faction",
+  b: "🐛 Terminids",
+  a: "🤖 Automatons",
+  i: "🦑 Illuminate"
+};
+
+function categoryItems(name){
+  const cat = DATA.find(function(c){ return c.name === name; });
+  const out = [];
+  if(!cat) return out;
+  TIER_ORDER.forEach(function(bt){
+    (cat.tiers[bt] || []).forEach(function(item){ out.push({ item: item, base: bt }); });
+  });
+  return out;
+}
+
+const POOL = {
+  primary:   categoryItems("Primary weapons"),
+  secondary: categoryItems("Secondary weapons"),
+  grenade:   categoryItems("Grenades"),
+  armor:     categoryItems("Armor passives"),
+  booster:   categoryItems("Boosters"),
+  support:   categoryItems("Support weapons"),
+  backpack:  categoryItems("Backpacks"),
+  offensive: categoryItems("Eagle stratagems")
+                .concat(categoryItems("Sentries & emplacements"))
+                .concat(categoryItems("Orbital stratagems"))
+};
+
+function tierScore(t){ return TIER_ORDER.length - TIER_ORDER.indexOf(t); } // S+ =6 ... D =1
+
+function weightedPick(pool, faction, used){
+  const candidates = pool.filter(function(o){ return !used[o.item]; });
+  const weights = candidates.map(function(o){
+    return Math.pow(tierScore(tierFor(o.item, o.base, faction)), 2);
+  });
+  let total = 0;
+  weights.forEach(function(w){ total += w; });
+  let r = Math.random() * total;
+  for(let i = 0; i < candidates.length; i++){
+    r -= weights[i];
+    if(r <= 0) return candidates[i];
+  }
+  return candidates[candidates.length - 1];
+}
+
+function loadoutRow(label, o, faction, first){
+  const eff = tierFor(o.item, o.base, faction);
+  const src = SOURCE[o.item];
+  const fac = FACTION[o.item];
+  const facIcons = (fac && fac.length) ? " " + fac.map(function(f){ return FACTION_EMOJI[f]; }).join("") : "";
+  return '<div class="lo-row' + (first ? " first" : "") + '">' +
+    '<span class="lo-label">' + label + '</span>' +
+    '<span class="lo-tier" style="background:' + TIER_COLOR[eff] + '">' + eff + '</span>' +
+    '<span class="lo-item">' + o.item + facIcons +
+      (src ? ' <span class="lo-src">· ' + src + '</span>' : '') +
+    '</span>' +
+    '</div>';
+}
+
+const loadoutEl = document.getElementById("loadout");
+
+function renderLoadout(faction){
+  const used = {};
+  function pick(pool){ const o = weightedPick(pool, faction, used); used[o.item] = true; return o; }
+
+  const rows = [
+    ["Primary",   pick(POOL.primary)],
+    ["Secondary", pick(POOL.secondary)],
+    ["Grenade",   pick(POOL.grenade)],
+    ["Armor",     pick(POOL.armor)],
+    ["Booster",   pick(POOL.booster)],
+    ["Support",   pick(POOL.support)],
+    ["Backpack",  pick(POOL.backpack)],
+    ["Stratagem", pick(POOL.offensive)],
+    ["Stratagem", pick(POOL.offensive)]
+  ];
+
+  loadoutEl.innerHTML =
+    '<div class="lo-head">Loadout for ' + FACTION_LABEL[faction] + '</div>' +
+    rows.map(function(r, idx){ return loadoutRow(r[0], r[1], faction, idx === 0); }).join("");
+}
+
+document.getElementById("genBtn").addEventListener("click", function(){
+  renderLoadout(activeFaction);
+});
+
+render("all");
 </script>
 
 </body>

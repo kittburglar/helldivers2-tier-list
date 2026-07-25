@@ -122,6 +122,12 @@
     transition:filter .15s;
   }
   .gen-btn:hover{ filter:brightness(1.08); }
+  .gen-btn-alt{
+    color:var(--text);
+    background:transparent;
+    border:1px solid var(--border);
+  }
+  .gen-btn-alt:hover{ border-color:#3a4152; filter:none; background:rgba(255,255,255,0.04); }
   .gen-note{ font-size:12px; color:var(--text-muted); }
   .lo-head{
     font-size:12px;
@@ -292,6 +298,7 @@
   <div class="generator">
     <div class="gen-top">
       <button class="gen-btn" id="genBtn">🎲 Generate loadout</button>
+      <button class="gen-btn gen-btn-alt" id="copyBtn">📋 Copy</button>
       <span class="gen-note">Weighted toward the faction picked above (Overall = any). Reroll anytime.</span>
     </div>
     <div id="loadout"></div>
@@ -1013,6 +1020,7 @@ function loadoutRow(label, o, faction, first){
 }
 
 const loadoutEl = document.getElementById("loadout");
+let lastLoadout = null;
 
 function renderLoadout(faction){
   const used = {};
@@ -1030,13 +1038,56 @@ function renderLoadout(faction){
     ["Stratagem", pick(POOL.offensive)]
   ];
 
+  lastLoadout = { faction: faction, rows: rows };
+
   loadoutEl.innerHTML =
     '<div class="lo-head">Loadout for ' + FACTION_LABEL[faction] + '</div>' +
     rows.map(function(r, idx){ return loadoutRow(r[0], r[1], faction, idx === 0); }).join("");
 }
 
+// Plain-text version of the current loadout, for copying.
+function loadoutText(){
+  if(!lastLoadout) return "";
+  const faction = lastLoadout.faction;
+  const lines = ["Helldivers 2 loadout — " + FACTION_LABEL[faction]];
+  lastLoadout.rows.forEach(function(r){
+    const label = r[0], o = r[1];
+    const eff = tierFor(o.item, o.base, faction);
+    const src = SOURCE[o.item];
+    lines.push(label + ": " + o.item + " [" + eff + "]" + (src ? " — " + src : ""));
+  });
+  return lines.join("\n");
+}
+
 document.getElementById("genBtn").addEventListener("click", function(){
   renderLoadout(activeFaction);
+});
+
+document.getElementById("copyBtn").addEventListener("click", function(){
+  const btn = this;
+  const text = loadoutText();
+  function flash(msg){
+    const original = "📋 Copy";
+    btn.textContent = msg;
+    setTimeout(function(){ btn.textContent = original; }, 1400);
+  }
+  function fallbackCopy(){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    flash(ok ? "✓ Copied" : "Copy failed");
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ flash("✓ Copied"); }, fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
 });
 
 render("all");

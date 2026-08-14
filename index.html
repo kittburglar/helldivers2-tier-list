@@ -193,7 +193,7 @@
    Tiers must be one of: "S+","S","A","B","C","D"
    ============================================================ */
 
-const LAST_UPDATED = "July 24, 2026 - patch 6.3.1";
+const LAST_UPDATED = "August 13, 2026 - patch 7.0.0 (Devoid of Liberty)";
 
 const DATA = [
   {
@@ -202,7 +202,7 @@ const DATA = [
     tiers: {
       "S+": ["Democratic Detonation", "Dust Devils", "Control Group", "Servants of Freedom"],
       "S":  ["Redacted Regiment", "Polar Patriots", "Siege Breakers", "Exo Experts"],
-      "A":  ["Urban Legends", "Entrenched Division", "Borderline Justice", "Freedom's Flame"],
+      "A":  ["Urban Legends", "Entrenched Division", "Borderline Justice", "Freedom's Flame", "Castellan's Creed"],
       "B":  ["Chemical Agents", "Cutting Edge", "Steeled Veterans", "Viper Commandos", "Truth Enforcers", "Python Commandos"],
       "C":  ["Force of Law", "Masters of Ceremony"],
       "D":  ["Halo: ODST", "Righteous Revenants"]
@@ -214,10 +214,10 @@ const DATA = [
     tiers: {
       "S+": ["Eruptor", "Purifier", "Explosive Crossbow", "Punisher Plasma"],
       "S":  ["Scorcher", "Censor", "Diligence"],
-      "A":  ["Coyote", "Sweeper", "Variable", "Double Freedom", "Dominator", "Double-Edge Sickle", "Scythe", "Trident"],
-      "B":  ["Sickle", "Tenderizer", "Liberator Carbine", "Reprimand", "Stoker", "Gallant"],
-      "C":  ["Breaker", "Breaker Incendiary", "Torcher"],
-      "D":  ["Constitution", "Liberator Concussive", "Blitzer"]
+      "A":  ["Coyote", "Sweeper", "Variable", "Double Freedom", "Dominator", "Double-Edge Sickle", "Scythe", "Trident", "Hot-Shot Marksman Rifle", "Stoker"],
+      "B":  ["Sickle", "Tenderizer", "Liberator Carbine", "Reprimand", "Gallant"],
+      "C":  ["Breaker", "Breaker Incendiary", "Torcher", "Constitution"],
+      "D":  ["Liberator Concussive", "Blitzer"]
     }
   },
   {
@@ -226,7 +226,7 @@ const DATA = [
     tiers: {
       "S+": ["Grenade Pistol", "Senator", "Ultimatum"],
       "S":  ["Talon", "Loyalist", "Re-Educator"],
-      "A":  ["Warrant", "Verdict", "Veto", "Missile Pistol", "Redeemer", "Stim Pistol", "Crisper"],
+      "A":  ["Warrant", "Verdict", "Veto", "Missile Pistol", "Redeemer", "Stim Pistol", "Crisper", "Bolt Pistol"],
       "B":  ["SOCOM", "Machete"],
       "C":  ["Saber", "Combat Hatchet", "Dagger", "Bushwhacker"],
       "D":  ["Peacemaker", "Stun Lance", "Stun Baton", "Entrenchment Tool"]
@@ -239,7 +239,7 @@ const DATA = [
       "S+": ["Thermite"],
       "S":  ["Gas", "Dynamite", "Shield", "Stun"],
       "A":  ["Incendiary Impact", "Incendiary", "Impact", "Lure Mine", "Pyrotech", "High Explosive", "Pineapple", "Giga Grenade", "Seeker", "Frag"],
-      "B":  ["Smokescreen", "Smoke"],
+      "B":  ["Smokescreen", "Smoke", "Meltamine"],
       "C":  ["Arc"],
       "D":  ["Urchin", "Throwing Knife"]
     }
@@ -250,7 +250,7 @@ const DATA = [
     tiers: {
       "S+": ["Med-Kit", "Siege-Ready", "Engineering Kit", "Oxygenator"],
       "S":  ["Reduced Signature", "Ballistic Padding", "Concussive Padding (Reinforced)", "Desert Stormer", "Acclimated"],
-      "A":  ["Unflinching", "Peak Physique", "Democracy Protects", "Concussive Padding (Hazmat)", "Concussive Padding (Grenadier)", "Fortified", "Scout", "Adreno-Defibrillator", "Inflammable"],
+      "A":  ["Unflinching", "Peak Physique", "Democracy Protects", "Concussive Padding (Hazmat)", "Concussive Padding (Grenadier)", "Fortified", "Scout", "Adreno-Defibrillator", "Inflammable", "True Grit"],
       "B":  ["Rock Solid", "Reinforced Epaulettes", "Gunslinger", "Extra Padding", "Supplementary Adrenaline", "Feet First", "Servo-Assisted"],
       "C":  ["Integrated Explosives", "Advanced Filtration"],
       "D":  ["Electrical Conduit"]
@@ -262,7 +262,7 @@ const DATA = [
     tiers: {
       "S+": ["Autocannon", "Laser Cannon", "Quasar Cannon", "Recoilless Rifle"],
       "S":  ["Machine Gun", "Expendable Anti-Tank", "Grenade Launcher", "Arc Thrower"],
-      "A":  ["Heavy Machine Gun", "Stalwart", "Flamethrower", "Commando", "Airburst Rocket Launcher", "Railgun", "Anti-Materiel Rifle", "Spear", "Sterilizer", "Cremator"],
+      "A":  ["Heavy Machine Gun", "Stalwart", "Flamethrower", "Commando", "Airburst Rocket Launcher", "Railgun", "Anti-Materiel Rifle", "Spear", "Sterilizer", "Cremator", "Meltagun"],
       "B":  ["Epoch", "Maxigun", "Leveller", "Belt-Fed Grenade Launcher"],
       "C":  ["Defoliation Tool", "Breaching Hammer"]
     }
@@ -528,7 +528,14 @@ const SOURCE = {
   "Orbital Gatling Barrage": "Base game",
   "Orbital Airburst Strike": "Base game",
   "Orbital EMS Strike": "Base game",
-  "Orbital Smoke Strike": "Base game"
+  "Orbital Smoke Strike": "Base game",
+
+  // Castellan's Creed (Warhammer 40K)
+  "Hot-Shot Marksman Rifle": "Castellan's Creed",
+  "Bolt Pistol": "Castellan's Creed",
+  "Meltamine": "Castellan's Creed",
+  "Meltagun": "Castellan's Creed",
+  "True Grit": "Castellan's Creed"
 };
 
 /* ============================================================
@@ -701,7 +708,13 @@ const FACTION = {
   "Orbital 120mm HE Barrage": ["a","b"],
   "Orbital Gatling Barrage": ["b"],
   "Orbital Airburst Strike": ["b","i"],
-  "Orbital EMS Strike": ["b","i"]
+  "Orbital EMS Strike": ["b","i"],
+
+  // Castellan's Creed (Warhammer 40K)
+  "Hot-Shot Marksman Rifle": ["a","i"],
+  "Bolt Pistol": ["a","b"],
+  "Meltamine": ["b","a"],
+  "Meltagun": ["a","b"]
 };
 
 /* ============================================================

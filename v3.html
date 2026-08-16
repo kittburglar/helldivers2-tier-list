@@ -128,7 +128,12 @@
     border:1px solid var(--border);
   }
   .gen-btn-alt:hover{ border-color:#3a4152; filter:none; background:rgba(255,255,255,0.04); }
-  .gen-note{ font-size:12px; color:var(--text-muted); }
+  .gen-note{ font-size:12px; color:var(--text-muted); margin:0; }
+  .gen-opts{ display:flex; gap:18px; flex-wrap:wrap; margin:0 0 0.7rem; }
+  .gen-check{ display:flex; align-items:center; gap:7px; font-size:13px; color:var(--text-secondary); cursor:pointer; }
+  .gen-check input{ accent-color:var(--b); width:15px; height:15px; }
+  .lo-tier-none{ background:var(--border); color:var(--text-muted); }
+  .lo-note{ font-weight:400; color:var(--text-secondary); font-size:13px; font-style:italic; }
   .lo-head{
     font-size:12px;
     font-weight:700;
@@ -349,8 +354,12 @@
     <div class="gen-top">
       <button class="gen-btn" id="genBtn">🎲 Generate loadout</button>
       <button class="gen-btn gen-btn-alt" id="copyBtn">📋 Copy</button>
-      <span class="gen-note">Weighted toward the faction picked above (Overall = any). Reroll anytime.</span>
     </div>
+    <div class="gen-opts">
+      <label class="gen-check"><input type="checkbox" id="mechToggle"> Include a mech</label>
+      <label class="gen-check"><input type="checkbox" id="optimalToggle"> Optimal only (S+/S, few A)</label>
+    </div>
+    <p class="gen-note">Weighted toward the faction picked above (Overall = any). Reroll anytime.</p>
     <div id="loadout"></div>
   </div>
   <div id="categories"></div>
@@ -1076,16 +1085,32 @@ const POOL = {
   mech:      categoryItems("Exosuits")
 };
 
+// Support weapons that come bundled with their own backpack. When one of these
+// is rolled, the generator won't also assign a separate backpack (you can only
+// wear one), and that freed slot becomes another stratagem instead.
+const SUPPORT_WITH_BACKPACK = {
+  "Recoilless Rifle": 1, "Autocannon": 1, "Spear": 1, "Airburst Rocket Launcher": 1,
+  "Cremator": 1, "Belt-Fed Grenade Launcher": 1, "Bullet Storm": 1, "Maxigun": 1
+};
+
 function tierScore(t){ return TIER_ORDER.length - TIER_ORDER.indexOf(t); } // S+ =6 ... D =1
 
-function weightedPick(pool, faction, used){
+// "Optimal" mode: heavily favour S+/S, allow the occasional A, exclude the rest.
+const OPTIMAL_WEIGHT = { "S+": 100, "S": 55, "A": 8 };
+
+function weightedPick(pool, faction, used, optimal){
   let candidates = pool.filter(function(o){ return !used[o.item] && isOwned(o.item); });
   if(!candidates.length) candidates = pool.filter(function(o){ return !used[o.item]; });
-  const weights = candidates.map(function(o){
-    return Math.pow(tierScore(tierFor(o.item, o.base, faction)), 2);
+  let weights = candidates.map(function(o){
+    const eff = tierFor(o.item, o.base, faction);
+    return optimal ? (OPTIMAL_WEIGHT[eff] || 0) : Math.pow(tierScore(eff), 2);
   });
   let total = 0;
   weights.forEach(function(w){ total += w; });
+  if(total === 0){ // optimal mode but this slot has no S+/S/A option — fall back to normal
+    weights = candidates.map(function(o){ return Math.pow(tierScore(tierFor(o.item, o.base, faction)), 2); });
+    total = 0; weights.forEach(function(w){ total += w; });
+  }
   let r = Math.random() * total;
   for(let i = 0; i < candidates.length; i++){
     r -= weights[i];
@@ -1095,11 +1120,19 @@ function weightedPick(pool, faction, used){
 }
 
 function loadoutRow(label, o, faction, first){
+  const rowCls = "lo-row" + (first ? " first" : "");
+  if(o && o.note){
+    return '<div class="' + rowCls + '">' +
+      '<span class="lo-label">' + label + '</span>' +
+      '<span class="lo-tier lo-tier-none">—</span>' +
+      '<span class="lo-item lo-note">' + o.note + '</span>' +
+      '</div>';
+  }
   const eff = tierFor(o.item, o.base, faction);
   const src = SOURCE[o.item];
   const fac = FACTION[o.item];
   const facIcons = (fac && fac.length) ? " " + fac.map(function(f){ return FACTION_EMOJI[f]; }).join("") : "";
-  return '<div class="lo-row' + (first ? " first" : "") + '">' +
+  return '<div class="' + rowCls + '">' +
     '<span class="lo-label">' + label + '</span>' +
     '<span class="lo-tier" style="background:' + TIER_COLOR[eff] + '">' + eff + '</span>' +
     '<span class="lo-item">' + o.item + facIcons +
@@ -1111,26 +1144,41 @@ function loadoutRow(label, o, faction, first){
 const loadoutEl = document.getElementById("loadout");
 let lastLoadout = null;
 
+// Generator options (remembered in the browser).
+let includeMech = (function(){ try { return localStorage.getItem("hd2_include_mech") !== "0"; } catch(e){ return true; } })();
+let optimalMode = (function(){ try { return localStorage.getItem("hd2_optimal") === "1"; } catch(e){ return false; } })();
+
 function renderLoadout(faction){
   const used = {};
-  function pick(pool){ const o = weightedPick(pool, faction, used); used[o.item] = true; return o; }
+  function pick(pool){ const o = weightedPick(pool, faction, used, optimalMode); used[o.item] = true; return o; }
 
   const rows = [
     ["Primary",   pick(POOL.primary)],
     ["Secondary", pick(POOL.secondary)],
     ["Grenade",   pick(POOL.grenade)],
     ["Armor",     pick(POOL.armor)],
-    ["Booster",   pick(POOL.booster)],
-    ["Support",   pick(POOL.support)],
-    ["Backpack",  pick(POOL.backpack)],
-    ["Mech",      pick(POOL.mech)],
-    ["Stratagem", pick(POOL.offensive)]
+    ["Booster",   pick(POOL.booster)]
   ];
+
+  // Four stratagem slots total.
+  let remaining = 4;
+  const support = pick(POOL.support);
+  rows.push(["Support", support]); remaining--;
+
+  if(SUPPORT_WITH_BACKPACK[support.item]){
+    rows.push(["Backpack", { note: "comes with " + support.item }]); // bundled — no separate slot
+  } else {
+    rows.push(["Backpack", pick(POOL.backpack)]); remaining--;
+  }
+
+  if(includeMech){ rows.push(["Mech", pick(POOL.mech)]); remaining--; }
+
+  while(remaining > 0){ rows.push(["Stratagem", pick(POOL.offensive)]); remaining--; }
 
   lastLoadout = { faction: faction, rows: rows };
 
   loadoutEl.innerHTML =
-    '<div class="lo-head">Loadout for ' + FACTION_LABEL[faction] + '</div>' +
+    '<div class="lo-head">Loadout for ' + FACTION_LABEL[faction] + (optimalMode ? ' · optimal' : '') + '</div>' +
     rows.map(function(r, idx){ return loadoutRow(r[0], r[1], faction, idx === 0); }).join("");
 }
 
@@ -1138,9 +1186,10 @@ function renderLoadout(faction){
 function loadoutText(){
   if(!lastLoadout) return "";
   const faction = lastLoadout.faction;
-  const lines = ["Helldivers 2 loadout — " + FACTION_LABEL[faction]];
+  const lines = ["Helldivers 2 loadout — " + FACTION_LABEL[faction] + (optimalMode ? " (optimal)" : "")];
   lastLoadout.rows.forEach(function(r){
     const label = r[0], o = r[1];
+    if(o && o.note){ lines.push(label + ": (" + o.note + ")"); return; }
     const eff = tierFor(o.item, o.base, faction);
     const src = SOURCE[o.item];
     lines.push(label + ": " + o.item + " [" + eff + "]" + (src ? " — " + src : ""));
@@ -1248,6 +1297,21 @@ document.getElementById("copyBtn").addEventListener("click", function(){
   } else {
     fallbackCopy();
   }
+});
+
+const mechToggle = document.getElementById("mechToggle");
+const optimalToggle = document.getElementById("optimalToggle");
+mechToggle.checked = includeMech;
+optimalToggle.checked = optimalMode;
+mechToggle.addEventListener("change", function(){
+  includeMech = mechToggle.checked;
+  try{ localStorage.setItem("hd2_include_mech", includeMech ? "1" : "0"); }catch(e){}
+  renderLoadout(activeFaction);
+});
+optimalToggle.addEventListener("change", function(){
+  optimalMode = optimalToggle.checked;
+  try{ localStorage.setItem("hd2_optimal", optimalMode ? "1" : "0"); }catch(e){}
+  renderLoadout(activeFaction);
 });
 
 render("all");

@@ -209,7 +209,7 @@
 
 <header>
   <h1>Helldivers 2 — tier lists</h1>
-  <p>Warbonds · weapons · grenades · armor · support · backpacks · eagles · sentries · boosters · orbitals</p>
+  <p>Warbonds · weapons · grenades · armor · support · backpacks · eagles · sentries · boosters · orbitals · exosuits</p>
   <p id="last-updated"></p>
   <p class="nav"><a href="index.html">classic (v1)</a> · <a href="v3.html">loadout generator (v3)</a></p>
 </header>
@@ -309,7 +309,7 @@ const DATA = [
       "S+": ["Autocannon", "Laser Cannon", "Quasar Cannon", "Recoilless Rifle"],
       "S":  ["Machine Gun", "Expendable Anti-Tank", "Grenade Launcher", "Arc Thrower"],
       "A":  ["Heavy Machine Gun", "Stalwart", "Flamethrower", "Commando", "Airburst Rocket Launcher", "Railgun", "Anti-Materiel Rifle", "Spear", "Sterilizer", "Cremator", "Meltagun"],
-      "B":  ["Epoch", "Maxigun", "Leveller", "Belt-Fed Grenade Launcher"],
+      "B":  ["Epoch", "Maxigun", "Bullet Storm", "Leveller", "Belt-Fed Grenade Launcher"],
       "C":  ["Defoliation Tool", "Breaching Hammer"]
     }
   },
@@ -339,7 +339,7 @@ const DATA = [
     tiers: {
       "S":  ["Gatling Sentry", "Machine Gun Sentry", "Autocannon Sentry"],
       "A":  ["Rocket Sentry", "Mortar Sentry", "EMS Mortar Sentry", "HMG Emplacement", "Tesla Tower"],
-      "B":  ["Flame Sentry", "Gas Mortar Sentry", "Laser Sentry", "Anti-Tank Emplacement", "Shield Generator Relay"],
+      "B":  ["Flame Sentry", "Gas Mortar Sentry", "Laser Sentry", "Anti-Tank Emplacement", "Anti-Tank Mines", "Shield Generator Relay"],
       "C":  ["Anti-Personnel Minefield", "Incendiary Mines"]
     }
   },
@@ -363,6 +363,14 @@ const DATA = [
       "A":  ["Orbital Walking Barrage", "Orbital 120mm HE Barrage", "Orbital Gatling Barrage", "Orbital Airburst Strike"],
       "B":  ["Orbital EMS Strike"],
       "C":  ["Orbital Smoke Strike"]
+    }
+  },
+  {
+    name: "Exosuits",
+    icon: "🦾",
+    tiers: {
+      "S":  ["Lumberer Exosuit", "Emancipator Exosuit"],
+      "A":  ["Breakthrough Exosuit", "Patriot Exosuit"]
     }
   }
 ];
@@ -581,7 +589,15 @@ const SOURCE = {
   "Bolt Pistol": "Castellan's Creed",
   "Meltamine": "Castellan's Creed",
   "Meltagun": "Castellan's Creed",
-  "True Grit": "Castellan's Creed"
+  "True Grit": "Castellan's Creed",
+
+  // Exosuits & Exo Experts support weapon
+  "Bullet Storm": "Exo Experts",
+  "Lumberer Exosuit": "Exo Experts",
+  "Breakthrough Exosuit": "Exo Experts",
+  "Emancipator Exosuit": "Base game",
+  "Patriot Exosuit": "Base game",
+  "Anti-Tank Mines": "Base game"
 };
 
 /* ============================================================
@@ -760,7 +776,15 @@ const FACTION = {
   "Hot-Shot Marksman Rifle": ["a","i"],
   "Bolt Pistol": ["a","b"],
   "Meltamine": ["b","a"],
-  "Meltagun": ["a","b"]
+  "Meltagun": ["a","b"],
+
+  // Exosuits & Exo Experts support weapon
+  "Bullet Storm": ["b","a"],
+  "Anti-Tank Mines": ["a","b"],
+  "Lumberer Exosuit": ["b"],
+  "Emancipator Exosuit": ["a","b"],
+  "Breakthrough Exosuit": ["a","i"],
+  "Patriot Exosuit": ["b","a"]
 };
 
 /* ============================================================

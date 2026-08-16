@@ -229,6 +229,25 @@
   .legend span{display:flex;align-items:center;gap:6px}
   #legend{margin-bottom:0.9rem}
   .faction-key{color:var(--text-muted)}
+  html{ scroll-behavior:smooth; }
+  .toc{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin:0 0 1.75rem;
+  }
+  .toc a{
+    font-size:12.5px;
+    color:var(--text-secondary);
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:5px 12px;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .toc a:hover{ color:var(--text); border-color:#3a4152; }
+  section.category{ scroll-margin-top:64px; }
   .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
   section.category{
     background:var(--card);
@@ -340,6 +359,7 @@
     <span>🤖 Automatons</span>
     <span>🦑 Illuminate</span>
   </div>
+  <nav class="toc" id="toc"></nav>
   <details class="ownbox" id="ownbox">
     <summary>Owned warbonds <span id="ownCount"></span></summary>
     <div class="own-actions">
@@ -396,10 +416,10 @@ const DATA = [
     icon: "\uD83C\uDFAF",
     tiers: {
       "S+": ["Eruptor", "Purifier", "Explosive Crossbow", "Punisher Plasma"],
-      "S":  ["Scorcher", "Censor", "Diligence"],
-      "A":  ["Coyote", "Sweeper", "Variable", "Double Freedom", "Dominator", "Double-Edge Sickle", "Scythe", "Trident", "Hot-Shot Marksman Rifle", "Stoker"],
-      "B":  ["Sickle", "Tenderizer", "Liberator Carbine", "Reprimand", "Gallant"],
-      "C":  ["Breaker", "Breaker Incendiary", "Torcher", "Constitution"],
+      "S":  ["Scorcher", "Censor", "Diligence", "Halt"],
+      "A":  ["Coyote", "Sweeper", "Variable", "Double Freedom", "Dominator", "Double-Edge Sickle", "Scythe", "Trident", "Hot-Shot Marksman Rifle", "Stoker", "Deadeye", "Diligence Counter Sniper", "Adjudicator"],
+      "B":  ["Sickle", "Tenderizer", "Liberator Carbine", "Reprimand", "Gallant", "Liberator Penetrator", "Cookout", "Pacifier", "Pummeler", "Punisher", "Slugger", "Suppressor"],
+      "C":  ["Breaker", "Breaker Incendiary", "Torcher", "Constitution", "Liberator", "Defender", "Knight", "Speargun"],
       "D":  ["Liberator Concussive", "Blitzer"]
     }
   },
@@ -547,6 +567,21 @@ const SOURCE = {
   "Constitution": "Free (anniversary)",
   "Liberator Concussive": "Steeled Veterans",
   "Blitzer": "Cutting Edge",
+  "Deadeye": "Borderline Justice",
+  "Halt": "Truth Enforcers",
+  "Adjudicator": "Democratic Detonation",
+  "Pummeler": "Polar Patriots",
+  "Cookout": "Freedom's Flame",
+  "Pacifier": "Force of Law",
+  "Suppressor": "Redacted Regiment",
+  "Speargun": "Dust Devils",
+  "Diligence Counter Sniper": "Base game",
+  "Liberator Penetrator": "Base game",
+  "Liberator": "Base game",
+  "Punisher": "Base game",
+  "Slugger": "Base game",
+  "Defender": "Base game",
+  "Knight": "Super Store",
 
   // Secondary weapons
   "Grenade Pistol": "Democratic Detonation",
@@ -776,6 +811,21 @@ const FACTION = {
   "Trident": ["b","a","i"],
   "Gallant": ["a","i"],
   "Constitution": ["a"],
+  "Deadeye": ["a","i"],
+  "Halt": ["b","i"],
+  "Adjudicator": ["a","b"],
+  "Pummeler": ["a","i"],
+  "Cookout": ["b"],
+  "Pacifier": ["a","i"],
+  "Suppressor": ["b","a"],
+  "Speargun": ["b","a"],
+  "Diligence Counter Sniper": ["a"],
+  "Liberator Penetrator": ["a","i"],
+  "Liberator": ["b"],
+  "Punisher": ["b","i"],
+  "Slugger": ["a","b"],
+  "Defender": ["b"],
+  "Knight": ["b"],
 
   // Secondary weapons
   "Grenade Pistol": ["b","a","i"],
@@ -970,6 +1020,14 @@ legendEl.innerHTML = TIER_ORDER.map(function(t){
 const catsEl = document.getElementById("categories");
 let activeFaction = "all";
 
+// Stable id for each category section, used by the table of contents.
+function catId(name){ return "cat-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+// Build the table of contents (categories are fixed, so build it once).
+document.getElementById("toc").innerHTML = DATA.map(function(cat){
+  return '<a href="#' + catId(cat.name) + '">' + cat.icon + ' ' + cat.name + '</a>';
+}).join("");
+
 // Derive an item's tier for the selected faction.
 function tierFor(item, baseTier, faction){
   if(faction === "all") return baseTier;
@@ -1021,7 +1079,7 @@ function render(faction){
           '<div class="chips">' + chips + '</div>' +
           '</div>';
       }).join("");
-    return '<section class="category">' +
+    return '<section class="category" id="' + catId(cat.name) + '">' +
       '<div class="cat-head"><span class="icon">' + cat.icon + '</span><h2>' + cat.name + '</h2></div>' +
       rows +
       '</section>';

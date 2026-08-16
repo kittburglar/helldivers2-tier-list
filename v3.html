@@ -1072,8 +1072,8 @@ const POOL = {
   backpack:  categoryItems("Backpacks"),
   offensive: categoryItems("Eagle stratagems")
                 .concat(categoryItems("Sentries & emplacements"))
-                .concat(categoryItems("Orbital stratagems"))
-                .concat(categoryItems("Exosuits"))
+                .concat(categoryItems("Orbital stratagems")),
+  mech:      categoryItems("Exosuits")
 };
 
 function tierScore(t){ return TIER_ORDER.length - TIER_ORDER.indexOf(t); } // S+ =6 ... D =1
@@ -1123,7 +1123,7 @@ function renderLoadout(faction){
     ["Booster",   pick(POOL.booster)],
     ["Support",   pick(POOL.support)],
     ["Backpack",  pick(POOL.backpack)],
-    ["Stratagem", pick(POOL.offensive)],
+    ["Mech",      pick(POOL.mech)],
     ["Stratagem", pick(POOL.offensive)]
   ];
 

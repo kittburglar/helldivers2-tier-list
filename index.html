@@ -417,9 +417,9 @@ const DATA = [
     tiers: {
       "S+": ["Eruptor", "Purifier", "Explosive Crossbow", "Punisher Plasma"],
       "S":  ["Scorcher", "Censor", "Diligence", "Halt"],
-      "A":  ["Coyote", "Sweeper", "Variable", "Double Freedom", "Dominator", "Double-Edge Sickle", "Scythe", "Trident", "Hot-Shot Marksman Rifle", "Stoker", "Deadeye", "Diligence Counter Sniper", "Adjudicator"],
-      "B":  ["Sickle", "Tenderizer", "Liberator Carbine", "Reprimand", "Gallant", "Liberator Penetrator", "Cookout", "Pacifier", "Pummeler", "Punisher", "Slugger", "Suppressor"],
-      "C":  ["Breaker", "Breaker Incendiary", "Torcher", "Constitution", "Liberator", "Defender", "Knight", "Speargun"],
+      "A":  ["Coyote", "Sweeper", "Variable", "Double Freedom", "Dominator", "Double-Edge Sickle", "Scythe", "Trident", "Hot-Shot Marksman Rifle", "Stoker", "Deadeye", "Diligence Counter Sniper", "Adjudicator", "Hyena", "Accelerator Rifle"],
+      "B":  ["Sickle", "Tenderizer", "Liberator Carbine", "Reprimand", "Gallant", "Liberator Penetrator", "Cookout", "Pacifier", "Pummeler", "Punisher", "Slugger", "Suppressor", "StA-52 Assault Rifle", "StA-11 SMG", "MA5C Assault Rifle", "One-Two", "Amendment"],
+      "C":  ["Breaker", "Breaker Incendiary", "Torcher", "Constitution", "Liberator", "Defender", "Knight", "M7S SMG", "M90A Shotgun", "Breaker Spray & Pray"],
       "D":  ["Liberator Concussive", "Blitzer"]
     }
   },
@@ -574,7 +574,6 @@ const SOURCE = {
   "Cookout": "Freedom's Flame",
   "Pacifier": "Force of Law",
   "Suppressor": "Redacted Regiment",
-  "Speargun": "Dust Devils",
   "Diligence Counter Sniper": "Base game",
   "Liberator Penetrator": "Base game",
   "Liberator": "Base game",
@@ -582,6 +581,16 @@ const SOURCE = {
   "Slugger": "Base game",
   "Defender": "Base game",
   "Knight": "Super Store",
+  "StA-52 Assault Rifle": "Righteous Revenants",
+  "StA-11 SMG": "Righteous Revenants",
+  "Accelerator Rifle": "Righteous Revenants",
+  "MA5C Assault Rifle": "Halo: ODST",
+  "M7S SMG": "Halo: ODST",
+  "M90A Shotgun": "Halo: ODST",
+  "One-Two": "Python Commandos",
+  "Amendment": "Masters of Ceremony",
+  "Hyena": "Free (Termicide event)",
+  "Breaker Spray & Pray": "Base game",
 
   // Secondary weapons
   "Grenade Pistol": "Democratic Detonation",
@@ -773,6 +782,40 @@ const SOURCE = {
 };
 
 /* ============================================================
+   WEAPON CLASS for primary weapons (shown next to the source).
+   ============================================================ */
+
+const CLASS = {
+  // Assault Rifles
+  "Liberator": "Assault Rifle", "Liberator Penetrator": "Assault Rifle",
+  "Liberator Concussive": "Assault Rifle", "Liberator Carbine": "Assault Rifle",
+  "Tenderizer": "Assault Rifle", "Adjudicator": "Assault Rifle", "Pacifier": "Assault Rifle",
+  "Coyote": "Assault Rifle", "Suppressor": "Assault Rifle", "One-Two": "Assault Rifle",
+  "StA-52 Assault Rifle": "Assault Rifle", "MA5C Assault Rifle": "Assault Rifle",
+  // Marksman Rifles
+  "Diligence": "Marksman Rifle", "Diligence Counter Sniper": "Marksman Rifle",
+  "Deadeye": "Marksman Rifle", "Constitution": "Marksman Rifle", "Censor": "Marksman Rifle",
+  "Amendment": "Marksman Rifle", "Hyena": "Marksman Rifle",
+  // Submachine Guns
+  "Knight": "Submachine Gun", "Defender": "Submachine Gun", "Pummeler": "Submachine Gun",
+  "Stoker": "Submachine Gun", "Gallant": "Submachine Gun", "Reprimand": "Submachine Gun",
+  "StA-11 SMG": "Submachine Gun", "M7S SMG": "Submachine Gun",
+  // Shotguns
+  "Breaker": "Shotgun", "Breaker Incendiary": "Shotgun", "Breaker Spray & Pray": "Shotgun",
+  "Punisher": "Shotgun", "Slugger": "Shotgun", "Cookout": "Shotgun", "Halt": "Shotgun",
+  "Double Freedom": "Shotgun", "Sweeper": "Shotgun", "M90A Shotgun": "Shotgun",
+  // Explosive
+  "Eruptor": "Explosive", "Explosive Crossbow": "Explosive",
+  // Energy-Based
+  "Punisher Plasma": "Energy-Based", "Accelerator Rifle": "Energy-Based", "Blitzer": "Energy-Based",
+  "Scythe": "Energy-Based", "Sickle": "Energy-Based", "Double-Edge Sickle": "Energy-Based",
+  "Scorcher": "Energy-Based", "Purifier": "Energy-Based", "Trident": "Energy-Based",
+  "Hot-Shot Marksman Rifle": "Energy-Based",
+  // Special
+  "Variable": "Special", "Torcher": "Special", "Dominator": "Special"
+};
+
+/* ============================================================
    FACTION it excels against. Codes: "b" = Terminids (bugs),
    "a" = Automatons (bots), "i" = Illuminate (squids).
    Give each item an array of the factions it's strongest vs.
@@ -818,7 +861,6 @@ const FACTION = {
   "Cookout": ["b"],
   "Pacifier": ["a","i"],
   "Suppressor": ["b","a"],
-  "Speargun": ["b","a"],
   "Diligence Counter Sniper": ["a"],
   "Liberator Penetrator": ["a","i"],
   "Liberator": ["b"],
@@ -826,6 +868,16 @@ const FACTION = {
   "Slugger": ["a","b"],
   "Defender": ["b"],
   "Knight": ["b"],
+  "StA-52 Assault Rifle": ["b","a"],
+  "StA-11 SMG": ["b"],
+  "Accelerator Rifle": ["a","i"],
+  "MA5C Assault Rifle": ["b","a"],
+  "M7S SMG": ["b"],
+  "M90A Shotgun": ["b","i"],
+  "One-Two": ["b","a"],
+  "Amendment": ["a"],
+  "Hyena": ["a","i"],
+  "Breaker Spray & Pray": ["b"],
 
   // Secondary weapons
   "Grenade Pistol": ["b","a","i"],
@@ -1052,9 +1104,10 @@ function chipHTML(item, baseTier, curTier){
     mv = '<span class="mv ' + (down ? 'down' : 'up') + '" title="Overall: ' + baseTier + '">' +
          (down ? '▼' : '▲') + baseTier + '</span>';
   }
+  const sub = [CLASS[item], src].filter(Boolean).join(" · ");
   return '<span class="chip' + (chipOwned(item) ? '' : ' unowned') + '">' +
     '<span class="chip-name">' + item + facIcons + mv + '</span>' +
-    (src ? '<span class="src">' + src + '</span>' : '') +
+    (sub ? '<span class="src">' + sub + '</span>' : '') +
     '</span>';
 }
 
@@ -1207,13 +1260,14 @@ function loadoutRow(label, o, faction, first){
   }
   const eff = tierFor(o.item, o.base, faction);
   const src = SOURCE[o.item];
+  const sub = [CLASS[o.item], src].filter(Boolean).join(" · ");
   const fac = FACTION[o.item];
   const facIcons = (fac && fac.length) ? " " + fac.map(function(f){ return FACTION_EMOJI[f]; }).join("") : "";
   return '<div class="' + rowCls + '">' +
     '<span class="lo-label">' + label + '</span>' +
     '<span class="lo-tier" style="background:' + TIER_COLOR[eff] + '">' + eff + '</span>' +
     '<span class="lo-item">' + o.item + facIcons +
-      (src ? ' <span class="lo-src">· ' + src + '</span>' : '') +
+      (sub ? ' <span class="lo-src">· ' + sub + '</span>' : '') +
     '</span>' +
     '</div>';
 }
@@ -1294,7 +1348,7 @@ const ALL_WARBONDS = (function(){
   return list;
 })();
 
-const NON_WARBOND_SOURCE = { "Base game": 1, "Super Store": 1, "Free (anniversary)": 1 };
+const NON_WARBOND_SOURCE = { "Base game": 1, "Super Store": 1, "Free (anniversary)": 1, "Free (Termicide event)": 1 };
 
 function loadOwned(){
   try{

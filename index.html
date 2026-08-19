@@ -442,7 +442,7 @@ const DATA = [
       "S+": ["Thermite"],
       "S":  ["Gas", "Dynamite", "Shield", "Stun"],
       "A":  ["Incendiary Impact", "Incendiary", "Impact", "Lure Mine", "Pyrotech", "High Explosive", "Pineapple", "Giga Grenade", "Seeker", "Frag"],
-      "B":  ["Smokescreen", "Smoke", "Meltamine"],
+      "B":  ["Smokescreen", "Smoke", "Melta Mine"],
       "C":  ["Arc"],
       "D":  ["Urchin", "Throwing Knife"]
     }
@@ -768,7 +768,7 @@ const SOURCE = {
   // Castellan's Creed (Warhammer 40K)
   "Hot-Shot Marksman Rifle": "Castellan's Creed",
   "Bolt Pistol": "Castellan's Creed",
-  "Meltamine": "Castellan's Creed",
+  "Melta Mine": "Castellan's Creed",
   "Meltagun": "Castellan's Creed",
   "True Grit": "Castellan's Creed",
 
@@ -812,7 +812,17 @@ const CLASS = {
   "Scorcher": "Energy-Based", "Purifier": "Energy-Based", "Trident": "Energy-Based",
   "Hot-Shot Marksman Rifle": "Energy-Based",
   // Special
-  "Variable": "Special", "Torcher": "Special", "Dominator": "Special"
+  "Variable": "Special", "Torcher": "Special", "Dominator": "Special",
+  // Secondary — Pistols
+  "Peacemaker": "Pistol", "Redeemer": "Pistol", "Senator": "Pistol", "Verdict": "Pistol",
+  "Warrant": "Pistol", "SOCOM": "Pistol", "Veto": "Pistol",
+  // Secondary — Melee
+  "Stun Lance": "Melee", "Saber": "Melee", "Stun Baton": "Melee", "Combat Hatchet": "Melee",
+  "Entrenchment Tool": "Melee", "Machete": "Melee",
+  // Secondary — Special sidearms
+  "Stim Pistol": "Special", "Bushwhacker": "Special", "Talon": "Special", "Crisper": "Special",
+  "Grenade Pistol": "Special", "Dagger": "Special", "Ultimatum": "Special", "Loyalist": "Special",
+  "Re-Educator": "Special", "Missile Pistol": "Special", "Bolt Pistol": "Special"
 };
 
 /* ============================================================
@@ -1014,7 +1024,7 @@ const FACTION = {
   // Castellan's Creed (Warhammer 40K)
   "Hot-Shot Marksman Rifle": ["a","i"],
   "Bolt Pistol": ["a","b"],
-  "Meltamine": ["b","a"],
+  "Melta Mine": ["b","a"],
   "Meltagun": ["a","b"],
 
   // Exosuits & Exo Experts support weapon

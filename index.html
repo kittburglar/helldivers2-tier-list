@@ -212,6 +212,11 @@
   }
   .own-grid input{ accent-color:var(--b); width:15px; height:15px; }
   .own-note{ font-size:11px; color:var(--text-muted); margin:0.9rem 0 1.1rem; }
+  .wn-date{ color:var(--text-muted); font-weight:400; font-size:12px; }
+  .wn-body{ padding:0.4rem 0 1rem; }
+  .wn-group{ font-weight:700; font-size:13px; margin:0.9rem 0 0.25rem; color:var(--text); }
+  .wn-body ul{ margin:0; padding-left:1.15rem; }
+  .wn-body li{ font-size:13px; color:var(--text-secondary); margin:3px 0; line-height:1.45; }
   .wrap{
     max-width:920px;
     margin:0 auto;
@@ -383,6 +388,33 @@
     <span>🤖 Automatons</span>
     <span>🦑 Illuminate</span>
   </div>
+  <details class="ownbox whatsnew">
+    <summary>✨ What's new <span class="wn-date">· updated Aug 19, 2026</span></summary>
+    <div class="wn-body">
+      <p class="wn-group">🎲 Loadout generator</p>
+      <ul>
+        <li>New dedicated <strong>Mech slot</strong>, with an on/off toggle</li>
+        <li><strong>Optimal mode</strong> — fills each slot with the best tier available (all S+, dropping to S then A only when needed), weighted by the faction you pick</li>
+        <li>No more impossible loadouts — support weapons that come with their own backpack (Recoilless, Autocannon, Spear…) no longer also get handed a second backpack</li>
+      </ul>
+      <p class="wn-group">🔫 Complete arsenal</p>
+      <ul>
+        <li>Audited every weapon against the in-game roster and added <strong>~25 missing primaries</strong> — Deadeye, Halt, Adjudicator, Pummeler, Cookout, Pacifier, the Killzone &amp; Halo crossover guns, Hyena, and more</li>
+        <li>Full roster now covered: <strong>52 primaries · 24 secondaries · 21 grenades</strong></li>
+      </ul>
+      <p class="wn-group">🏷️ Clearer labels</p>
+      <ul>
+        <li>Every weapon shows its <strong>class</strong> — Assault Rifle, Marksman Rifle, SMG, Shotgun, Energy-Based, Explosive, Special (Pistol / Melee for sidearms)</li>
+        <li>Every grenade shows its <strong>effect</strong> — Explosive, Incendiary, Gas, Stun, Smoke, Arc, Anti-Tank, Utility</li>
+      </ul>
+      <p class="wn-group">🧭 Easier to navigate</p>
+      <ul>
+        <li><strong>Table of contents</strong> up top to jump to any section</li>
+        <li>Floating <strong>back-to-top</strong> button</li>
+        <li>Merged the three old versions (classic / faction filter / generator) into one single page</li>
+      </ul>
+    </div>
+  </details>
   <nav class="toc" id="toc"></nav>
   <details class="ownbox" id="ownbox">
     <summary>Owned warbonds <span id="ownCount"></span></summary>
